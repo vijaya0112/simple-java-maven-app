@@ -1,33 +1,23 @@
 pipeline {
     agent any
-    options {
-        timeout(time: 1, unit: 'HOURS') // Pipeline timeout to prevent hanging
-    }
     stages {
         stage('Build') {
             steps {
-                echo 'Starting Build stage...'
                 sh 'mvn -B -DskipTests clean package'
             }
         }
         stage('Test') {
             steps {
-                echo 'Starting Test stage...'
                 sh 'mvn test'
             }
             post {
                 always {
-                    echo 'Publishing test results...'
                     junit 'target/surefire-reports/*.xml'
-                }
-                unsuccessful {
-                    echo 'Tests failed.'
                 }
             }
         }
         stage('Deliver') {
             steps {
-                echo 'Starting Deliver stage...'
                 sh './jenkins/scripts/deliver.sh'
             }
         }
